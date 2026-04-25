@@ -80,14 +80,14 @@ When rendering, we will wrap `<App />`, our root component, inside a `<Provider>
 
 The key step in server side rendering is to render the initial HTML of our component _**before**_ we send it to the client side. To do this, we use [ReactDOMServer.renderToString()](https://react.dev/reference/react-dom/server/renderToString).
 
-We then get the initial state from our Redux store using [`store.getState()`](../api/Store.md#getState). We will see how this is passed along in our `renderFullPage` function.
+We then get the initial state from our Redux store using [`store.getState()`](../api/Store.md#getState). We will see how this is passed along in our `renderApp` function.
 
 ```js
 import { renderToString } from 'react-dom/server'
 
-function handleRender(req, res) {
+function renderApp(req, res) {
   // Create a new Redux store instance
-  const store = createStore(counterApp)
+  const store = configureStore({ count: counter })
 
   // Render the component to a string
   const html = renderToString(
@@ -97,10 +97,10 @@ function handleRender(req, res) {
   )
 
   // Grab the initial state from our Redux store
-  const preloadedState = store.getState()
+  const finalState = store.getState()
 
-  // Send the rendered page back to the client
-  res.send(renderFullPage(html, preloadedState))
+  // Send the rendered markup and state as a JSON response
+  res.json({ markup: html, state: finalState })
 }
 ```
 
@@ -113,27 +113,11 @@ The `preloadedState` will then be available on the client side by accessing `win
 We also include our bundle file for the client-side application via a script tag. This is whatever output your bundling tool provides for your client entry point. It may be a static file or a URL to a hot reloading development server.
 
 ```js
-function renderFullPage(html, preloadedState) {
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        <title>Redux Universal Example</title>
-      </head>
-      <body>
-        <div id="root">${html}</div>
-        <script>
-          // WARNING: See the following for security issues around embedding JSON in HTML:
-          // https://redux.js.org/usage/server-rendering#security-considerations
-          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
-            /</g,
-            '\\u003c'
-          )}
-        </script>
-        <script src="/static/bundle.js"></script>
-      </body>
-    </html>
-    `
+function renderApp(html, preloadedState) {
+  return {
+    markup: html,
+    state: preloadedState
+  };
 }
 ```
 
@@ -258,18 +242,33 @@ On the server side, we simply wrap our existing code in the `fetchCounter` and r
 import { fetchCounter } from './api/counter'
 import { renderToString } from 'react-dom/server'
 
-function handleRender(req, res) {
+const app = new Express()
+const port = 8080
+
+// Use this middleware to set up hot module reloading via webpack.
+const compiler = webpack(webpackConfig)
+app.use(
+  webpackDevMiddleware(compiler, {
+    noInfo: true,
+    publicPath: webpackConfig.output.publicPath
+  })
+)
+app.use(webpackHotMiddleware(compiler))
+app.use(Express.urlencoded({ extended: false }))
+
+const renderApp = (req, res) => {
   // Query our mock API asynchronously
-  fetchCounter(apiResult => {
+  fetchCounter(apiResponse => {
     // Read the counter from the request, if provided
     const params = qs.parse(req.query)
-    const counter = parseInt(params.counter, 10) || apiResult || 0
+    const bodyCount = req.body && req.body.counter
+    const counter = parseInt(params.counter, 10) || parseInt(bodyCount, 10) || apiResponse || 0
 
     // Compile an initial state
-    let preloadedState = { counter }
+    const preloadedState = { count: counter }
 
     // Create a new Redux store instance
-    const store = createStore(counterApp, preloadedState)
+    const store = configureStore(preloadedState)
 
     // Render the component to a string
     const html = renderToString(
@@ -281,13 +280,26 @@ function handleRender(req, res) {
     // Grab the initial state from our Redux store
     const finalState = store.getState()
 
-    // Send the rendered page back to the client
-    res.send(renderFullPage(html, finalState))
+    // Send the rendered markup and state as a JSON response
+    res.json({ markup: html, state: finalState })
   })
 }
+
+// This is fired every time the server side receives a request
+app.use(renderApp)
+
+app.listen(port, error => {
+  if (error) {
+    console.error(error)
+  } else {
+    console.info(
+      `==> 🌎  Listening on port ${port}. Open up http://localhost:${port}/ in your browser.`
+    )
+  }
+})
 ```
 
-Because we call `res.send()` inside of the callback, the server will hold open the connection and won't send any data until that callback executes. You'll notice a 500ms delay is now added to each server request as a result of our new API call. A more advanced usage would handle errors in the API gracefully, such as a bad response or timeout.
+Because we call `res.json()` inside of the callback, the server will hold open the connection and won't send any data until that callback executes. You'll notice a 500ms delay is now added to each server request as a result of our new API call. A more advanced usage would handle errors in the API gracefully, such as a bad response or timeout.
 
 ### Security Considerations
 
@@ -297,10 +309,30 @@ In our example, we take a rudimentary approach to security. When we obtain the p
 
 For our simplistic example, coercing our input into a number is sufficiently secure. If you're handling more complex input, such as freeform text, then you should run that input through an appropriate sanitization function, such as [xss-filters](https://github.com/yahoo/xss-filters).
 
-Furthermore, you can add additional layers of security by sanitizing your state output. `JSON.stringify` can be subject to script injections. To counter this, you can scrub the JSON string of HTML tags and other dangerous characters. This can be done with either a simple text replacement on the string, e.g. `JSON.stringify(state).replace(/</g, '\\u003c')`, or via more sophisticated libraries such as [serialize-javascript](https://github.com/yahoo/serialize-javascript).
+Furthermore, you can add additional layers of security by sanitizing your state output. `JSON.stringify` can be subject to script injections. To counter this, you can scrub the JSON string of HTML tags and other dangerous characters. This can be done with either a simple text replacement on the string, e.g. `JSON.stringify(state).replace(/</g, '\u003c')`, or via more sophisticated libraries such as [serialize-javascript](https://github.com/yahoo/serialize-javascript).
+
+In our updated example, we now also parse URL-encoded bodies from forms. The `counter` value is obtained from either the query parameters or the request body, ensuring that we handle input more robustly. The initial state is now defined with `count` instead of `counter`, reflecting the updated variable name in our application. Finally, we send the rendered markup and state as a JSON response instead of rendering a full HTML page.
 
 ## Next Steps
 
 You may want to read [Redux Fundamentals Part 6: Async Logic and Data Fetching](../tutorials/fundamentals/part-6-async-logic.md) to learn more about expressing asynchronous flow in Redux with async primitives such as Promises and thunks. Keep in mind that anything you learn there can also be applied to universal rendering.
 
-If you use something like [React Router](https://github.com/remix-run/react-router), you might also want to express your data fetching dependencies as static `fetchData()` methods on your route handler components. They may return [thunks](../tutorials/fundamentals/part-6-async-logic.md), so that your `handleRender` function can match the route to the route handler component classes, dispatch `fetchData()` result for each of them, and render only after the Promises have resolved. This way the specific API calls required for different routes are colocated with the route handler component definitions. You can also use the same technique on the client side to prevent the router from switching the page until its data has been loaded.
+If you use something like [React Router](https://github.com/remix-run/react-router), you might also want to express your data fetching dependencies as static `fetchData()` methods on your route handler components. They may return [thunks](../tutorials/fundamentals/part-6-async-logic.md), so that your `renderApp` function can match the route to the route handler component classes, dispatch `fetchData()` result for each of them, and render only after the Promises have resolved. This way the specific API calls required for different routes are colocated with the route handler component definitions. You can also use the same technique on the client side to prevent the router from switching the page until its data has been loaded.
+
+```javascript
+const port = 8080;
+
+app.use(Express.urlencoded({ extended: false }));
+app.use(renderApp);
+
+app.listen(port, error => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.info(
+      `==> 🌎  Listening on port ${port}. Open up http://localhost:${port}/ in your browser.`
+    );
+  }
+});
+```
+
