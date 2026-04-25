@@ -5,7 +5,7 @@ coverage
 dist
 lib
 es
-
+.env
 # Yarn
 .cache
 .yarnrc
