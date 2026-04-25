@@ -1,119 +1,95 @@
 {
-  "codebase_sha": "ddee3f35e55330ed82556832c071a675e47ec32a",
+  "codebase_sha": "d023c13ea3497356fbe0d1dea0959d3d0f265a10",
   "mappings": [
     {
       "doc_file": "docs/usage/ServerRendering.md",
       "sections": [
         {
           "heading": "Async State Fetching",
-          "hash": "12b5cb36f612a71e91880c880b3a2042485edae69dab76aa299130a75352119a",
+          "hash": "10d25f394cc0ddda0efbc2e906bc6b1703bc62a8ced494e79262a1184965ed70",
           "files": [
-            "examples/universal/common/api/counter.js",
-            "examples/universal/server/server.js"
+            "examples/universal/common/api/counter.js"
           ]
         },
         {
           "heading": "Async State Fetching",
           "chunk_index": 1,
-          "hash": "a22bef2fa085534c550eebb9e6133a620851cafb6b9a9e1e95a323b4331b435b",
+          "hash": "12b5cb36f612a71e91880c880b3a2042485edae69dab76aa299130a75352119a",
           "files": [
-            "examples/universal/server/server.js"
+            "examples/counter-ts/src/features/counter/counterSlice.ts",
+            "examples/universal/common/api/counter.js"
           ]
         },
         {
           "heading": "Handling the Request",
-          "hash": "d81c88559fbcff906731d183388179dd1fe222e3b079d9a1d63251fdd45c1b09",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "hash": "09419d430d06789a49251a4f6bbc14027d15759b0863a7078e40e54b1c030e97",
+          "files": []
         },
         {
           "heading": "Inject Initial Component HTML and State",
-          "hash": "246a491195af137f20210de813b2f5f6b4fc6e6f24fa6667c2e140a632d590dc",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "hash": "4034a3daa1077c132bc388182842f336d453e0bb38ee92f26febc400a6ad30f8",
+          "files": []
         },
         {
           "heading": "Install Packages",
           "hash": "f6e46890eec8be51672e6350cba4f5a2d4fe22044010a402cccc012d775d4423",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         },
         {
           "heading": "Next Steps",
-          "hash": "1b76819a564fa80adf756ba7628accae5e6145500ba38734f21f651c03fae26e",
+          "hash": "024fa807e160e155876015c7ce1f36087c4aa1b18106c0c3dc8e5af0a233922d",
           "files": [
             "examples/async/src/actions/index.js",
             "examples/counter-ts/src/features/counter/counterSlice.ts",
-            "examples/counter/src/features/counter/counterSlice.js",
-            "examples/universal/server/server.js"
+            "examples/counter/src/features/counter/counterSlice.js"
           ]
         },
         {
           "heading": "Preparing the Initial State",
           "hash": "da76dbb91c4477c96c670bac929ba891b80c38097b09892bcb088826f09c8039",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         },
         {
           "heading": "Processing Request Parameters",
-          "hash": "f8704853395d0996408b4ba308cd15d9f565b6eb6724ae1ec3645c8b80273479",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "hash": "30de87fc4d6353a13d4ff0ef3b6afc5632f9d5ad50926d4185f1c77d7c84e868",
+          "files": []
         },
         {
           "heading": "Redux on the Server",
           "hash": "17ede7cf33b40e0bdaed33d5d83a8e92df8a51511efbc84c2522c9d3750f9c57",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         },
         {
           "heading": "Security Considerations",
-          "hash": "61d307a4003c514c4c1e821de7add35eb5ceb55d57e2ecb5616e88f8b55d8e4b",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "hash": "d60884ec6afdf6239a4d0ebe7909e0b5d7594eb1749f4ec4c0eaad66edbdde29",
+          "files": []
         },
         {
           "heading": "Server Rendering",
           "hash": "b89957282230e4268da60a1116cec9e24d29de8f017856d158b0dabf115a77ca",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         },
         {
           "heading": "Setting Up",
           "hash": "29f5cbbece1540d707ebabdfba478cff500194b6bf672ea336d01d9ba7835f5b",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         },
         {
           "heading": "The Client Side",
           "hash": "050ee92f57f0d618207042029fd021848a482b95d62efed70d8450023482ab58",
           "files": [
-            "examples/universal/client/index.js",
-            "examples/universal/server/server.js"
+            "examples/universal/client/index.js"
           ]
         },
         {
           "heading": "The Server Side",
-          "hash": "252f09d5621b7650d11ba6195fd41d99d00f6e447c2c77bc942dee4991a20f6d",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "hash": "d2ac7bac45017e2c17e0f273db06c9335bea35d38b2c1c214d8507512a5ab800",
+          "files": []
         },
         {
           "heading": "id: server-rendering\ntitle: Server Rendering",
           "hash": "efff46578be297e953f2a05539fdbf7b0a29b9fa1a25f86293774fd11efe87c1",
-          "files": [
-            "examples/universal/server/server.js"
-          ]
+          "files": []
         }
       ]
     }
