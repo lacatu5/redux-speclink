@@ -1,0 +1,121 @@
+{
+  "codebase_sha": "0d8fae6f444920588ea7993b31f9775cffc973d4",
+  "mappings": [
+    {
+      "doc_file": "docs/usage/ServerRendering.md",
+      "sections": [
+        {
+          "heading": "Async State Fetching",
+          "hash": "a22bef2fa085534c550eebb9e6133a620851cafb6b9a9e1e95a323b4331b435b",
+          "files": [
+            "examples/universal/common/api/counter.js",
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Async State Fetching",
+          "chunk_index": 1,
+          "hash": "a22bef2fa085534c550eebb9e6133a620851cafb6b9a9e1e95a323b4331b435b",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Handling the Request",
+          "hash": "07c141ee9f6b967c1dff9efca999550102510e71c67da1e95de8fee451333fac",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Inject Initial Component HTML and State",
+          "hash": "585f34a580b076e0ea49b922ace7b78c3dff0fe30a15b077555e62316afde9a1",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Install Packages",
+          "hash": "f6e46890eec8be51672e6350cba4f5a2d4fe22044010a402cccc012d775d4423",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Next Steps",
+          "hash": "8a4b703d29cd78b66d158af3db4c291fde28f802ecef074d1eb0e006af347bf7",
+          "files": [
+            "examples/async/src/actions/index.js",
+            "examples/counter-ts/src/features/counter/counterSlice.ts",
+            "examples/counter/src/features/counter/counterSlice.js",
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Preparing the Initial State",
+          "hash": "da76dbb91c4477c96c670bac929ba891b80c38097b09892bcb088826f09c8039",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Processing Request Parameters",
+          "hash": "f8704853395d0996408b4ba308cd15d9f565b6eb6724ae1ec3645c8b80273479",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Redux on the Server",
+          "hash": "17ede7cf33b40e0bdaed33d5d83a8e92df8a51511efbc84c2522c9d3750f9c57",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "hash": "1c4803281e5762cde5ba857fe58fa488740bdb58d2a4a6cf64f99568947f18fe",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Server Rendering",
+          "hash": "b89957282230e4268da60a1116cec9e24d29de8f017856d158b0dabf115a77ca",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "Setting Up",
+          "hash": "29f5cbbece1540d707ebabdfba478cff500194b6bf672ea336d01d9ba7835f5b",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "The Client Side",
+          "hash": "050ee92f57f0d618207042029fd021848a482b95d62efed70d8450023482ab58",
+          "files": [
+            "examples/universal/client/index.js",
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "The Server Side",
+          "hash": "252f09d5621b7650d11ba6195fd41d99d00f6e447c2c77bc942dee4991a20f6d",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        },
+        {
+          "heading": "id: server-rendering\ntitle: Server Rendering",
+          "hash": "efff46578be297e953f2a05539fdbf7b0a29b9fa1a25f86293774fd11efe87c1",
+          "files": [
+            "examples/universal/server/server.js"
+          ]
+        }
+      ]
+    }
+  ]
+}
