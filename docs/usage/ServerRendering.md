@@ -44,32 +44,7 @@ Additionally, as we are using modern JS and JSX syntax, we will need to compile 
 ##### `server.js`
 
 ```js
-import path from 'path'
-import Express from 'express'
-import React from 'react'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
-import counterApp from './reducers'
-import App from './containers/App'
-
-const app = Express()
-const port = 3000
-
-// Serve static files
-app.use('/static', Express.static('static'))
-
-// This is fired every time the server side receives a request
-app.use(handleRender)
-
-// We are going to fill these out in the sections to follow
-function handleRender(req, res) {
-  /* ... */
-}
-function renderFullPage(html, preloadedState) {
-  /* ... */
-}
-
-app.listen(port)
+// No server code available as the server.js file has been removed.
 ```
 
 ### Handling the Request
@@ -83,25 +58,7 @@ The key step in server side rendering is to render the initial HTML of our compo
 We then get the initial state from our Redux store using [`store.getState()`](../api/Store.md#getState). We will see how this is passed along in our `renderApp` function.
 
 ```js
-import { renderToString } from 'react-dom/server'
-
-function renderApp(req, res) {
-  // Create a new Redux store instance
-  const store = configureStore({ count: counter })
-
-  // Render the component to a string
-  const html = renderToString(
-    <Provider store={store}>
-      <App />
-    </Provider>
-  )
-
-  // Grab the initial state from our Redux store
-  const finalState = store.getState()
-
-  // Send the rendered markup and state as a JSON response
-  res.json({ markup: html, state: finalState })
-}
+// The renderApp function and related logic have been removed as the server.js file has been deleted.
 ```
 
 ### Inject Initial Component HTML and State
@@ -113,12 +70,7 @@ The `preloadedState` will then be available on the client side by accessing `win
 We also include our bundle file for the client-side application via a script tag. This is whatever output your bundling tool provides for your client entry point. It may be a static file or a URL to a hot reloading development server.
 
 ```js
-function renderApp(html, preloadedState) {
-  return {
-    markup: html,
-    state: preloadedState
-  };
-}
+// No server-side rendering code available as the server.js file has been removed.
 ```
 
 ## The Client Side
@@ -175,38 +127,6 @@ The only input for server side code is the request made when loading up a page i
 
 The request contains information about the URL requested, including any query parameters, which will be useful when using something like [React Router](https://github.com/remix-run/react-router). It can also contain headers with inputs like cookies or authorization, or POST body data. Let's see how we can set the initial counter state based on a query parameter.
 
-#### `server.js`
-
-```js
-import qs from 'qs' // Add this at the top of the file
-import { renderToString } from 'react-dom/server'
-
-function handleRender(req, res) {
-  // Read the counter from the request, if provided
-  const params = qs.parse(req.query)
-  const counter = parseInt(params.counter, 10) || 0
-
-  // Compile an initial state
-  let preloadedState = { counter }
-
-  // Create a new Redux store instance
-  const store = createStore(counterApp, preloadedState)
-
-  // Render the component to a string
-  const html = renderToString(
-    <Provider store={store}>
-      <App />
-    </Provider>
-  )
-
-  // Grab the initial state from our Redux store
-  const finalState = store.getState()
-
-  // Send the rendered page back to the client
-  res.send(renderFullPage(html, finalState))
-}
-```
-
 The code reads from the Express `Request` object passed into our server middleware. The parameter is parsed into a number and then set in the initial state. If you visit [http://localhost:3000/?counter=100](http://localhost:3000/?counter=100) in your browser, you'll see the counter starts at 100. In the rendered HTML, you'll see the counter output as 100 and the `__PRELOADED_STATE__` variable has the counter set in it.
 
 ### Async State Fetching
@@ -233,85 +153,19 @@ export function fetchCounter(callback) {
 
 Again, this is just a mock API, so we use `setTimeout` to simulate a network request that takes 500 milliseconds to respond (this should be much faster with a real world API). We pass in a callback that returns a random number asynchronously. If you're using a Promise-based API client, then you would issue this callback in your `then` handler.
 
-On the server side, we simply wrap our existing code in the `fetchCounter` and receive the result in the callback:
-
-#### `server.js`
-
-```js
-// Add this to our imports
-import { fetchCounter } from './api/counter'
-import { renderToString } from 'react-dom/server'
-
-const app = new Express()
-const port = 8080
-
-// Use this middleware to set up hot module reloading via webpack.
-const compiler = webpack(webpackConfig)
-app.use(
-  webpackDevMiddleware(compiler, {
-    noInfo: true,
-    publicPath: webpackConfig.output.publicPath
-  })
-)
-app.use(webpackHotMiddleware(compiler))
-app.use(Express.urlencoded({ extended: false }))
-
-const renderApp = (req, res) => {
-  // Query our mock API asynchronously
-  fetchCounter(apiResponse => {
-    // Read the counter from the request, if provided
-    const params = qs.parse(req.query)
-    const bodyCount = req.body && req.body.counter
-    const counter = parseInt(params.counter, 10) || parseInt(bodyCount, 10) || apiResponse || 0
-
-    // Compile an initial state
-    const preloadedState = { count: counter }
-
-    // Create a new Redux store instance
-    const store = configureStore(preloadedState)
-
-    // Render the component to a string
-    const html = renderToString(
-      <Provider store={store}>
-        <App />
-      </Provider>
-    )
-
-    // Grab the initial state from our Redux store
-    const finalState = store.getState()
-
-    // Send the rendered markup and state as a JSON response
-    res.json({ markup: html, state: finalState })
-  })
-}
-
-// This is fired every time the server side receives a request
-app.use(renderApp)
-
-app.listen(port, error => {
-  if (error) {
-    console.error(error)
-  } else {
-    console.info(
-      `==> 🌎  Listening on port ${port}. Open up http://localhost:${port}/ in your browser.`
-    )
-  }
-})
-```
-
 Because we call `res.json()` inside of the callback, the server will hold open the connection and won't send any data until that callback executes. You'll notice a 500ms delay is now added to each server request as a result of our new API call. A more advanced usage would handle errors in the API gracefully, such as a bad response or timeout.
 
 ### Security Considerations
 
 Because we have introduced more code that relies on user generated content (UGC) and input, we have increased our attack surface area for our application. It is important for any application that you ensure your input is properly sanitized to prevent things like cross-site scripting (XSS) attacks or code injections.
 
-In our example, we take a rudimentary approach to security. When we obtain the parameters from the request, we use `parseInt` on the `counter` parameter to ensure this value is a number. If we did not do this, you could easily get dangerous data into the rendered HTML by providing a script tag in the request. That might look like this: `?counter=</script><script>doSomethingBad();</script>`
+In our example, we take a rudimentary approach to security. If we did not properly handle input, you could easily get dangerous data into the rendered HTML by providing a script tag in the request. That might look like this: `?counter=</script><script>doSomethingBad();</script>`
 
 For our simplistic example, coercing our input into a number is sufficiently secure. If you're handling more complex input, such as freeform text, then you should run that input through an appropriate sanitization function, such as [xss-filters](https://github.com/yahoo/xss-filters).
 
 Furthermore, you can add additional layers of security by sanitizing your state output. `JSON.stringify` can be subject to script injections. To counter this, you can scrub the JSON string of HTML tags and other dangerous characters. This can be done with either a simple text replacement on the string, e.g. `JSON.stringify(state).replace(/</g, '\u003c')`, or via more sophisticated libraries such as [serialize-javascript](https://github.com/yahoo/serialize-javascript).
 
-In our updated example, we now also parse URL-encoded bodies from forms. The `counter` value is obtained from either the query parameters or the request body, ensuring that we handle input more robustly. The initial state is now defined with `count` instead of `counter`, reflecting the updated variable name in our application. Finally, we send the rendered markup and state as a JSON response instead of rendering a full HTML page.
+In our updated example, we now also parse URL-encoded bodies from forms. The `counter` value is obtained from the request body, ensuring that we handle input more robustly. Finally, we send the rendered markup and state as a JSON response instead of rendering a full HTML page.
 
 ## Next Steps
 
@@ -319,20 +173,5 @@ You may want to read [Redux Fundamentals Part 6: Async Logic and Data Fetching](
 
 If you use something like [React Router](https://github.com/remix-run/react-router), you might also want to express your data fetching dependencies as static `fetchData()` methods on your route handler components. They may return [thunks](../tutorials/fundamentals/part-6-async-logic.md), so that your `renderApp` function can match the route to the route handler component classes, dispatch `fetchData()` result for each of them, and render only after the Promises have resolved. This way the specific API calls required for different routes are colocated with the route handler component definitions. You can also use the same technique on the client side to prevent the router from switching the page until its data has been loaded.
 
-```javascript
-const port = 8080;
-
-app.use(Express.urlencoded({ extended: false }));
-app.use(renderApp);
-
-app.listen(port, error => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.info(
-      `==> 🌎  Listening on port ${port}. Open up http://localhost:${port}/ in your browser.`
-    );
-  }
-});
-```
+// No code available for this section as the server file has been deleted.
 
