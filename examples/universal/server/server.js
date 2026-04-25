@@ -17,7 +17,7 @@ import App from '../common/containers/App'
 import { fetchCounter } from '../common/api/counter'
 
 const app = new Express()
-const port = 3000
+const port = 8080
 
 // Use this middleware to set up hot module reloading via webpack.
 const compiler = webpack(webpackConfig)
@@ -29,15 +29,19 @@ app.use(
 )
 app.use(webpackHotMiddleware(compiler))
 
-const handleRender = (req, res) => {
+// Parse URL-encoded bodies (from forms)
+app.use(Express.urlencoded({ extended: false }))
+
+const renderApp = (req, res) => {
   // Query our mock API asynchronously
-  fetchCounter(apiResult => {
+  fetchCounter(apiResponse => {
     // Read the counter from the request, if provided
     const params = qs.parse(req.query)
-    const counter = parseInt(params.counter, 10) || apiResult || 0
+    const bodyCount = req.body && req.body.counter
+    const counter = parseInt(params.counter, 10) || parseInt(bodyCount, 10) || apiResponse || 0
 
     // Compile an initial state
-    const preloadedState = { counter }
+    const preloadedState = { count: counter }
 
     // Create a new Redux store instance
     const store = configureStore(preloadedState)
@@ -52,31 +56,13 @@ const handleRender = (req, res) => {
     // Grab the initial state from our Redux store
     const finalState = store.getState()
 
-    // Send the rendered page back to the client
-    res.send(renderFullPage(html, finalState))
+    // Send the rendered markup and state as a JSON response
+    res.json({ markup: html, state: finalState })
   })
 }
 
 // This is fired every time the server side receives a request
-app.use(handleRender)
-
-const renderFullPage = (html, preloadedState) => {
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        <title>Redux Universal Example</title>
-      </head>
-      <body>
-        <div id="app">${html}</div>
-        <script>
-          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
-        </script>
-        <script src="/static/bundle.js"></script>
-      </body>
-    </html>
-    `
-}
+app.use(renderApp)
 
 app.listen(port, error => {
   if (error) {
